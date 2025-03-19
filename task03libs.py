@@ -61,6 +61,10 @@ def load_logs(file_path: str) -> list:
     
     log_dict_list = list()
 
+    # ToDo додати обробники file exceptions.
+    # файл може стати недоступним під час читання
+    # https://www.geekster.in/articles/python-file-exception/
+    # https://docs.python.org/3/tutorial/errors.html#handling-exceptions
     with open(f_path, "r") as fh:
         for line in fh.readlines():
             log_dict_list.append(parse_log_line(line))
