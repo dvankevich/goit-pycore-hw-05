@@ -1,6 +1,8 @@
-import os, sys
+from datetime import datetime
 from pathlib import PurePath, Path
 import re
+
+log_levels = {"INFO", "ERROR", "DEBUG", "WARNING"}
 
 # ToDo - додати перевірки корректності формату рядка
 def parse_log_line(line: str) -> dict:
@@ -22,6 +24,20 @@ def parse_log_line(line: str) -> dict:
             - "message": A string containing the actual log message.
     """
     match = re.match(r'(\S+) (\S+) (\S+) (.+)', line)
+    if not match:
+        raise ValueError(f"Log line does not match expected format: {line}")
+    
+    try:
+        # Verify date format
+        datetime.strptime(match.group(1), '%Y-%m-%d')
+        # Verify time format
+        datetime.strptime(match.group(2), '%H:%M:%S')
+    except ValueError as e:
+        raise ValueError(f"Invalid date or time: {e}")
+    
+    if match.group(3) not in log_levels:
+        raise ValueError(f"Invalid log level: {match.group(3)}. Expected one of {log_levels}.")
+    
     return {
         "date": match.group(1),
         "time": match.group(2),
@@ -46,7 +62,7 @@ def load_logs(file_path: str) -> list:
               components of a log entry. Returns an empty list if error.
   
     Example:
-        >>> logs = load_logs("path/to/logfile.log")
+        >>> logs = load_logs("/path/to/logfile.log")
         >>> print(logs)
         [{'date': '2024-01-22', 'time': '08:30:01', 'loglevel': 'INFO', 
           'message': 'User logged in successfully'}, ...]
@@ -85,17 +101,23 @@ def display_log_counts(counts: dict):
     pass
 
 
-
+# ToDo створити окрему функцію для тестування функцій
 if __name__ == "__main__":
     logline = "2024-01-22 08:30:01 INFO User logged in successfully."
     badLogLine = "2024-01-22T08:30:01 INFO User logged in successfully."
     loglinedict = {"date": "2024-01-22", "time": "08:30:01", "loglevel": "INFO", "message": "User logged in successfully." }
 
-    print(parse_log_line(logline))
+    #print(parse_log_line(logline))
     # https://www.geeksforgeeks.org/how-to-compare-two-dictionaries-in-python/
     assert parse_log_line(logline) == loglinedict, "Dictionaries are not the same!"
     # print(parse_log_line(badLogLine))
 
-    print(load_logs("example.log")[0])
+    #print(load_logs("example.log")[0])
     assert load_logs("example.log")[0] == loglinedict
     assert load_logs("noexist.log") == []
+    #print(load_logs("badformat.log"))
+
+    try:
+        load_logs("badformat.log")
+    except ValueError as e:
+        assert str(e) == "Error reading log file: Invalid date or time: time data 'Mar' does not match format '%Y-%m-%d'"
