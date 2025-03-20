@@ -43,8 +43,7 @@ def load_logs(file_path: str) -> list:
 
     Returns:
         list: A list of dictionaries, where each dictionary contains the parsed
-              components of a log entry. If the file does not exist, is a 
-              directory, or is empty, the function returns None.
+              components of a log entry. Returns an empty list if error.
   
     Example:
         >>> logs = load_logs("path/to/logfile.log")
@@ -52,22 +51,23 @@ def load_logs(file_path: str) -> list:
         [{'date': '2024-01-22', 'time': '08:30:01', 'loglevel': 'INFO', 
           'message': 'User logged in successfully'}, ...]
     """
-    # Можливо, краще повертати порожній список коли файл не знайдено?
+
     f_path = Path(file_path)
-    if not f_path.exists() or f_path.is_dir():
-        return None
-    elif f_path.stat().st_size == 0:
-        return None
+    if not f_path.exists() or f_path.is_dir() or f_path.stat().st_size == 0:
+        return []
     
     log_dict_list = list()
 
-    # ToDo додати обробники file exceptions.
+    # Додав обробник file exceptions.
     # файл може стати недоступним під час читання
     # https://www.geekster.in/articles/python-file-exception/
     # https://docs.python.org/3/tutorial/errors.html#handling-exceptions
-    with open(f_path, "r") as fh:
-        for line in fh.readlines():
-            log_dict_list.append(parse_log_line(line))
+    try:
+        with open(f_path, "r") as fh:
+            for line in fh.readlines():
+                log_dict_list.append(parse_log_line(line))
+    except Exception as e:
+        print(f"Error reading log file: {e}")
 
     return log_dict_list
 
@@ -90,9 +90,7 @@ if __name__ == "__main__":
     logline = "2024-01-22 08:30:01 INFO User logged in successfully."
     badLogLine = "2024-01-22T08:30:01 INFO User logged in successfully."
     loglinedict = {"date": "2024-01-22", "time": "08:30:01", "loglevel": "INFO", "message": "User logged in successfully." }
-    # print(loglinedict)
-    # for key, value in loglinedict.items():
-    #   print(key, value)parse_log_line(logline)
+
     print(parse_log_line(logline))
     # https://www.geeksforgeeks.org/how-to-compare-two-dictionaries-in-python/
     assert parse_log_line(logline) == loglinedict, "Dictionaries are not the same!"
@@ -100,3 +98,4 @@ if __name__ == "__main__":
 
     print(load_logs("example.log")[0])
     assert load_logs("example.log")[0] == loglinedict
+    assert load_logs("noexist.log") == []
