@@ -97,7 +97,11 @@ def filter_logs_by_level(logs: list, level: str) -> list:
 
 def count_logs_by_level(logs: list) -> dict:
     # підрахунок записів за рівнем логування
-    pass
+    counters = {}
+    for log in logs:
+        log_level = log["loglevel"]
+        counters[log_level] = counters.get(log_level, 0) + 1
+    return counters
 
 def display_log_counts(counts: dict):
     # форматує та виводить результати. 
@@ -124,3 +128,5 @@ if __name__ == "__main__":
     assert len(filter_logs_by_level(example_log, "WARNING")) == 1
     assert len(filter_logs_by_level(example_log, "DEBUG")) == 3
     assert len(filter_logs_by_level(example_log, "ERROR")) == 2
+
+    assert count_logs_by_level(example_log) == {'INFO': 4, 'DEBUG': 3, 'ERROR': 2, 'WARNING': 1}
