@@ -4,7 +4,6 @@ import re
 
 log_levels = {"INFO", "ERROR", "DEBUG", "WARNING"}
 
-# ToDo - додати перевірки корректності формату рядка
 def parse_log_line(line: str) -> dict:
     """
     Parses a log line string into a dictionary.
@@ -22,22 +21,26 @@ def parse_log_line(line: str) -> dict:
             - "time": A string representing the time in 'HH:MM:SS' format.
             - "loglevel": A string indicating the log level (e.g., "INFO", "ERROR").
             - "message": A string containing the actual log message.
+        or empty dict if error
     """
     match = re.match(r'(\S+) (\S+) (\S+) (.+)', line)
     if not match:
-        raise ValueError(f"Log line does not match expected format: {line}")
-    
+        print((f"Log line does not match expected format: {line}"))
+        return {}
+       
     try:
         # Verify date format
         datetime.strptime(match.group(1), '%Y-%m-%d')
         # Verify time format
         datetime.strptime(match.group(2), '%H:%M:%S')
     except ValueError as e:
-        raise ValueError(f"Invalid date or time: {e}")
+        print(f"Invalid date or time: {e}")
+        return {}
     
     if match.group(3) not in log_levels:
-        raise ValueError(f"Invalid log level: {match.group(3)}. Expected one of {log_levels}.")
-    
+        print((f"Invalid log level: {match.group(3)}. Expected one of {log_levels}."))
+        return {}
+     
     return {
         "date": match.group(1),
         "time": match.group(2),
@@ -74,22 +77,23 @@ def load_logs(file_path: str) -> list:
     
     log_dict_list = list()
 
-    # Додав обробник file exceptions.
-    # файл може стати недоступним під час читання
-    # https://www.geekster.in/articles/python-file-exception/
-    # https://docs.python.org/3/tutorial/errors.html#handling-exceptions
-    try:
-        with open(f_path, "r") as fh:
-            for line in fh.readlines():
-                log_dict_list.append(parse_log_line(line))
-    except Exception as e:
-        print(f"Error reading log file: {e}")
+    with open(f_path, "r") as fh:
+        for line in fh.readlines():
+            log_line = parse_log_line(line)
+            if log_line:
+                log_dict_list.append(log_line)
+            else:
+                return []
 
     return log_dict_list
 
 def filter_logs_by_level(logs: list, level: str) -> list:
     # фільтрація логів логів за рівнем
-    pass
+    if not (level in log_levels):
+        return []
+    return list(filter(lambda log: log["loglevel"] == level, logs))
+
+
 
 def count_logs_by_level(logs: list) -> dict:
     # підрахунок записів за рівнем логування
@@ -107,17 +111,16 @@ if __name__ == "__main__":
     badLogLine = "2024-01-22T08:30:01 INFO User logged in successfully."
     loglinedict = {"date": "2024-01-22", "time": "08:30:01", "loglevel": "INFO", "message": "User logged in successfully." }
 
-    #print(parse_log_line(logline))
     # https://www.geeksforgeeks.org/how-to-compare-two-dictionaries-in-python/
     assert parse_log_line(logline) == loglinedict, "Dictionaries are not the same!"
-    # print(parse_log_line(badLogLine))
 
-    #print(load_logs("example.log")[0])
     assert load_logs("example.log")[0] == loglinedict
     assert load_logs("noexist.log") == []
-    #print(load_logs("badformat.log"))
+    assert load_logs("badformat.log") == []
 
-    try:
-        load_logs("badformat.log")
-    except ValueError as e:
-        assert str(e) == "Error reading log file: Invalid date or time: time data 'Mar' does not match format '%Y-%m-%d'"
+    example_log = load_logs("example.log")
+    assert filter_logs_by_level(example_log, "notInList") == []
+    assert len(filter_logs_by_level(example_log, "INFO")) == 4
+    assert len(filter_logs_by_level(example_log, "WARNING")) == 1
+    assert len(filter_logs_by_level(example_log, "DEBUG")) == 3
+    assert len(filter_logs_by_level(example_log, "ERROR")) == 2
