@@ -37,3 +37,104 @@ https://poe.com/s/Eak681zglDGLsPQo2rkd
 
 3. **Стандартизація**:
     - Використання `Callable` відповідає трендам та стандартам в розвитку Python і типізації. Це робить ваш код більш читабельним і підтримуваним, особливо в середовищі колективної роботи.
+
+## інші фреймворки і бібліотеки Python, які значно полегшують розробку утиліт командного рядка.
+
+https://poe.com/s/eSshDD1abARTZ4d4XLbQ
+
+-   https://click.palletsprojects.com/en/stable/
+-   https://typer.tiangolo.com/
+-   https://google.github.io/python-fire/
+
+Ось деякі з найпопулярніших:
+
+1. **Click**:
+
+    - Click є популярною бібліотекою для створення командних утиліт у Python. Вона простіша у використанні, ніж стандартна бібліотека `argparse`, і дозволяє створювати більш зручні інтерфейси командного рядка.
+    - Переваги: простий синтаксис, підтримка підкоманд, автоматичне генерування допомоги та документації.
+
+    **Приклад використання**:
+
+    ```python
+    import click
+
+    @click.command()
+    @click.argument('name')
+    @click.option('--greeting', default='Hello', help='Greeting message')
+    def greet(name, greeting):
+        click.echo(f'{greeting}, {name}!')
+
+    if __name__ == '__main__':
+        greet()
+    ```
+
+2. **Typer**:
+
+    - Typer — це ще одна бібліотека для створення командних рядків, яка базується на `Click`, але з підтримкою типізації. Це дозволяє автоматично генерувати документацію та полегшує валідацію аргументів.
+    - Переваги: інтеграція з Pydantic для валідації, автозавершення команд і аргументів.
+
+    **Приклад використання**:
+
+    ```python
+    from typer import Typer
+
+    app = Typer()
+
+    @app.command()
+    def greet(name: str, greeting: str = "Hello"):
+        """Greet the user with a friendly message."""
+        print(f"{greeting}, {name}!")
+
+    if __name__ == "__main__":
+        app()
+    ```
+
+3. **Argparse**:
+
+    - Хоча `argparse` уже згадувався, це стандартна бібліотека Python для обробки аргументів командного рядка. Вона достатньо потужна, але може бути дещо громіздкою для налаштувань, порівняно з Click або Typer.
+
+4. **Fire**:
+
+    - Google Fire є фреймворком, який автоматично генерує CLI з будь-якого Python-об'єкта, включаючи функції, класи та модулі. Завдяки цьому, ви можете швидко перетворити свої програми в командні утиліти.
+
+    **Приклад використання**:
+
+    ```python
+    import fire
+
+    class Greeter(object):
+        def greet(self, name='World'):
+            return f'Hello, {name}!'
+
+    if __name__ == '__main__':
+        fire.Fire(Greeter)
+    ```
+
+5. **docopt**:
+
+    - docopt дозволяє вам описати інтерфейс командного рядка у формі рядка документації. Він автоматично парсить аргументи на основі цього опису.
+
+    **Приклад використання**:
+
+    ```python
+    """Simple program to greet users.
+
+    Usage:
+      greet.py <name> [--greeting=<greet>]
+
+    Options:
+      -h --help     Show this help.
+      --greeting=<greet> Greeting message [default: Hello].
+    """
+    from docopt import docopt
+
+    if __name__ == '__main__':
+        arguments = docopt(__doc__)
+        name = arguments['<name>']
+        greeting = arguments['--greeting']
+        print(f"{greeting}, {name}!")
+    ```
+
+### Висновок
+
+Ці фреймворки і бібліотеки створені для спрощення процесу створення утиліт командного рядка, і ви можете вибрати той, який найкраще відповідає вашим потребам.
