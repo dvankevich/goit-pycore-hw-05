@@ -30,5 +30,7 @@ def main():
     for log in filtered_logs:
         print(f"{log['date']} {log['time']} {log['loglevel']} {log['message']}")
 
+    sys.exit()
+
 if __name__ == "__main__":
     main()

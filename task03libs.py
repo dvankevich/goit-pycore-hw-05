@@ -106,10 +106,10 @@ def count_logs_by_level(logs: list) -> dict:
 def display_log_counts(counts: dict):
     # форматує та виводить результати. 
     # приймає результати виконання функції count_logs_by_level
-    print("Рівень логування | Кількість")
-    print("-----------------+----------")
+    print("Рівень логування| Кількість")
+    print("----------------+----------")
     for err_level, count in counts.items():
-        print(f"{err_level:<17}|  {count}")
+        print(f"{err_level:<16}|  {count}")
 
 
 # ToDo створити окрему функцію для тестування функцій
