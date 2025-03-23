@@ -2,7 +2,7 @@ from task01 import caching_fibonacci
 from task02 import sum_profit, generator_numbers
 
 fibnum = caching_fibonacci()
-
+print("--- TASK 01 ---")
 print("число Фібоначчі для -1 =", fibnum(-1))
 print("число Фібоначчі для 0 =", fibnum(0))
 print("число Фібоначчі для 1 =", fibnum(1))
