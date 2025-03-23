@@ -106,7 +106,10 @@ def count_logs_by_level(logs: list) -> dict:
 def display_log_counts(counts: dict):
     # форматує та виводить результати. 
     # приймає результати виконання функції count_logs_by_level
-    pass
+    print("Рівень логування | Кількість")
+    print("-----------------+----------")
+    for err_level, count in counts.items():
+        print(f"{err_level:<17}|  {count}")
 
 
 # ToDo створити окрему функцію для тестування функцій
@@ -130,3 +133,5 @@ if __name__ == "__main__":
     assert len(filter_logs_by_level(example_log, "ERROR")) == 2
 
     assert count_logs_by_level(example_log) == {'INFO': 4, 'DEBUG': 3, 'ERROR': 2, 'WARNING': 1}
+
+    display_log_counts(count_logs_by_level(load_logs("example.log")))
