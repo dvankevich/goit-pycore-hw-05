@@ -45,6 +45,7 @@ https://poe.com/s/eSshDD1abARTZ4d4XLbQ
 -   https://click.palletsprojects.com/en/stable/
 -   https://typer.tiangolo.com/
 -   https://google.github.io/python-fire/
+-   http://docopt.org/
 
 Ось деякі з найпопулярніших:
 
