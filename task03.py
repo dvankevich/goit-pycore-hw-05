@@ -2,6 +2,7 @@ import sys, argparse
 from pathlib import PurePath, Path
 from task03libs import display_log_counts, count_logs_by_level, load_logs, filter_logs_by_level
 
+# ToDo перенаправити повідомлення про помилки в sys.stderr
 def main():
     parser = argparse.ArgumentParser(
         description='Log file analizer.')
